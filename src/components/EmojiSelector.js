@@ -8,7 +8,6 @@ const EmojiSelector = ({ onEmojiSelect }) => {
     '😍': 'love',
     '🤔': 'thinking',
     '😱': 'scream',
-    // Add more mappings as needed
   };
 
   return (

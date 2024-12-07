@@ -1,61 +1,49 @@
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const HUGGINGFACE_API_KEY = process.env.HF_TOKEN;
-console.log("Hugging Face Token:", HUGGINGFACE_API_KEY);
+// Use the API key from your environment variables
+const GEMINI_API_KEY = process.env.GEMINI_KEY;
+console.log("Gemini API Key:", GEMINI_API_KEY);
 
-async function query(data) {
-  const API_URL = "https://api-inference.huggingface.co/models/google/flan-t5-large"
-  const response = await fetch(
-    API_URL,
-    {
-      headers: {
-        Authorization: `Bearer ${HUGGINGFACE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      body: JSON.stringify(data),
-    }
-  );
+// Initialize the Gemini API
+const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Hugging Face API error: ${errorText}`);
+// Function to generate a quote using Gemini
+async function query(emoji) {
+  try {
+    const prompt = `Write a meaningful quote inspired by the emoji: ${emoji}`;
+
+    // Generate content from the Gemini model
+    const result = await model.generateContent(prompt);
+    const response = await result.response.text();
+
+    return response;
+  } catch (error) {
+    throw new Error(`Gemini API error: ${error.message}`);
   }
-
-  const result = await response.json();
-  return result;
 }
 
-
-
-
+// API Route Handler
 export async function POST(request) {
-  console.log('API Route: Generate Quote Called');
+  console.log("API Route: Generate Quote Called");
 
   try {
     const requestBody = await request.json();
-    console.log('Received Request Body:', requestBody);
+    console.log("Received Request Body:", requestBody);
 
     const { emoji } = requestBody;
-    console.log('Generating quote for emoji:', emoji);
+    console.log("Generating quote for emoji:", emoji);
 
-    // Modify prompt slightly to guide model output more precisely
-    const payload = {
-      inputs: `Generate a short and meaningful quote inspired by the word: ${emoji}.`
-    };
+    // Get the quote from Gemini API
+    const rawQuote = await query(emoji);
+    console.log("Gemini Response:", rawQuote);
 
-    const quoteResponse = await query(payload);
-    console.log('Hugging Face Response:', quoteResponse);
-
-    // Extract only the meaningful quote after filtering out unnecessary instructions
-    const rawQuote = quoteResponse[0]?.generated_text || "No quote generated";
     return Response.json({ quote: rawQuote });
   } catch (error) {
-    console.error('FULL API error:', error);
+    console.error("FULL API error:", error);
     return Response.json(
-      { message: 'Error generating quote', details: error.message },
+      { message: "Error generating quote", details: error.message },
       { status: 500 }
     );
   }
 }
-
-
