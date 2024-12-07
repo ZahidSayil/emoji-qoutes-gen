@@ -3,11 +3,11 @@ import { Copy } from 'lucide-react';
 
 const QuoteDisplay = ({ quote, onCopy }) => {
   return (
-    <div className="bg-gray-100 p-4 rounded-lg relative">
-      <p className="text-lg italic text-center">{quote}</p>
+    <div className="bg-white p-6 rounded-lg shadow-lg relative max-w-lg mx-auto">
+      <p className="text-lg font-semibold text-gray-900 italic text-center">{quote}</p>
       <button 
         onClick={onCopy}
-        className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+        className="absolute top-2 right-2 text-gray-600 hover:text-gray-800 transition-colors"
         aria-label="Copy quote"
       >
         <Copy size={20} />
@@ -17,4 +17,3 @@ const QuoteDisplay = ({ quote, onCopy }) => {
 };
 
 export default QuoteDisplay;
-
