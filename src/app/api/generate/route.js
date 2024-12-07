@@ -1,5 +1,6 @@
 
 const HUGGINGFACE_API_KEY = process.env.HF_TOKEN;
+console.log("Hugging Face Token:", HUGGING_FACE_API_KEY);
 
 async function query(data) {
   const API_URL = "https://api-inference.huggingface.co/models/google/flan-t5-large"
